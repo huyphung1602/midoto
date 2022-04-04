@@ -10,8 +10,10 @@ import Html exposing (..)
 import Html.Events exposing (onInput, onSubmit)
 import Html.Attributes exposing (..)
 import Json.Decode as JsonDecode
+import Json.Encode as JsonEncode
 import Task
 import Time
+import Ports
 -- END:import
 
 -- START:main
@@ -24,6 +26,35 @@ main =
         , subscriptions = subscriptions
         }
 -- END:main
+
+-- START:storage
+saveTodos : List Todo -> Cmd msg
+saveTodos todos =
+    JsonEncode.list todoEncoder todos
+        |> JsonEncode.encode 0
+        |> Ports.storeTodos
+
+
+todoEncoder : Todo -> JsonDecode.Value
+todoEncoder todo =
+    JsonEncode.object
+        [ ( "id", JsonEncode.int todo.id )
+        , ( "name", JsonEncode.string todo.name )
+        , ( "workedTime", JsonEncode.float todo.workedTime )
+        , ( "previousWorkedTime", JsonEncode.float todo.workedTime )
+        , ( "status", JsonEncode.string <| todoStatusToString todo.status )
+        ]
+
+todoStatusToString : TodoStatus -> String
+todoStatusToString status =
+    case status of
+        Active ->
+            "Active"
+        Incomplete ->
+            "Incomplete"
+        Completed ->
+            "Completed"
+-- END:storage
 
 -- START:model
 type TodoStatus
@@ -78,6 +109,7 @@ type Msg
     | Stop
     | Tick Time.Posix
 
+
 -- END:update
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -103,56 +135,77 @@ update msg model =
             , Cmd.none
             )         
         AddTodo options ->
+            let
+                newTodos = addToTodos (String.join " " options) model.todos
+            in
             ({ model
-                | todos = addToTodos (String.join " " options) model.todos
+                | todos = newTodos
                 , inputText = ""
             }
-            , Cmd.none
+            , saveTodos newTodos
             )
         Check index ->
+            let
+                newTodos = setCompleteTodo index Completed model.todos
+            in
             ({ model
-                | todos = setCompleteTodo index Completed model.todos
+                | todos = newTodos
                 , inputText = ""
             }
-            , Cmd.none
+            , saveTodos newTodos
             )
         Uncheck index ->
+            let
+                newTodos = setCompleteTodo index Incomplete model.todos
+            in
             ({ model
-                | todos = setCompleteTodo index Incomplete model.todos
+                | todos = newTodos
                 , inputText = ""
             }
-            , Cmd.none
+            , saveTodos newTodos
             )
         Delete index ->
+            let
+                newTodos = deleteTodo index model.todos
+            in
             ({ model
-                | todos = deleteTodo index model.todos
+                | todos = newTodos
                 , inputText = ""
             }
-            , Cmd.none
+            , saveTodos newTodos
             )
         ActiveOn index ->
+            let
+                newTodos = setActiveTodo index model.todos
+            in
             ({ model
-                | todos = setActiveTodo index model.todos
+                | todos = newTodos
                 , inputText = ""
             }
-            , Cmd.none
+            , saveTodos newTodos
             )
         Start index->
+            let
+                newTodos = startTodo index model.todos
+            in
             ({ model
                 | isWorking = True
                 , startTime = model.time
-                , todos = startTodo index model.todos
+                , todos = newTodos
                 , inputText = ""
             }
-            , Cmd.none
+            , saveTodos newTodos
             )
         Stop ->
+            let
+                newTodos = updatePreviousWorkedTime model.todos
+            in
             ({ model
                 | isWorking = False
                 , inputText = ""
-                , todos = updatePreviousWorkedTime model.todos
+                , todos = newTodos
             }
-            , Cmd.none
+            , saveTodos newTodos
             )
         Tick newTime ->
             ({ model
