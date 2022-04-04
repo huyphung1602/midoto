@@ -35,6 +35,7 @@ type alias Todo =
     { id : Int
     , name : String
     , workedTime : Float
+    , previousWorkedTime : Float
     , status : TodoStatus
     }
 
@@ -43,6 +44,9 @@ type alias Model =
     , inputText : String
     , isShowForm : Bool
     , isWorking : Bool
+    , time : Time.Posix
+    , startTime : Time.Posix
+    , zone : Time.Zone
     }
 
 init : () -> (Model, Cmd Msg)
@@ -51,6 +55,9 @@ init _ =
       , inputText = ""
       , isShowForm = False
       , isWorking = False
+      , time = Time.millisToPosix 0
+      , startTime = Time.millisToPosix 0
+      , zone = Time.utc
       }
     , Cmd.none
     )
@@ -69,7 +76,7 @@ type Msg
     | ActiveOn Int
     | Start Int
     | Stop
-    | Tick
+    | Tick Time.Posix
 
 -- END:update
 
@@ -133,6 +140,7 @@ update msg model =
         Start index->
             ({ model
                 | isWorking = True
+                , startTime = model.time
                 , todos = startTodo index model.todos
                 , inputText = ""
             }
@@ -142,12 +150,14 @@ update msg model =
             ({ model
                 | isWorking = False
                 , inputText = ""
+                , todos = updatePreviousWorkedTime model.todos
             }
             , Cmd.none
             )
-        Tick ->
+        Tick newTime ->
             ({ model
-                | todos = updateWorkedTime model.todos
+                | time = newTime
+                , todos = if model.isWorking then updateWorkedTime model else model.todos
             }
             , Cmd.none
             )
@@ -172,7 +182,7 @@ addToTodos input todos =
                 Nothing ->
                     1
     in
-    todos ++ [ Todo lastIndex input 0 Incomplete]
+    todos ++ [ Todo lastIndex input 0 0 Incomplete]
 
 setCompleteTodo : Int -> TodoStatus -> List Todo -> List Todo
 setCompleteTodo index completedStatus todos =
@@ -201,12 +211,7 @@ hasActiveTodo todos =
 startTodo : Int -> List Todo -> List Todo
 startTodo index todos =
     if hasActiveTodo todos then
-        List.map (\todo ->
-            if todo.status == Active then
-                { todo | status = Active }
-            else
-                todo
-        ) todos
+        todos
     else
         List.map (\todo ->
             if todo.id == index then
@@ -219,14 +224,22 @@ deleteTodo : Int -> List Todo -> List Todo
 deleteTodo index todos =
     List.filter (\todo -> todo.id /= index) todos
 
-updateWorkedTime : List Todo -> List Todo
-updateWorkedTime todos =
+updatePreviousWorkedTime : List Todo -> List Todo
+updatePreviousWorkedTime todos =
+    List.map (\todo -> { todo | previousWorkedTime = todo.workedTime }) todos
+
+updateWorkedTime : Model -> List Todo
+updateWorkedTime model =
     List.map (\todo ->
         if todo.status == Active then
-            { todo | workedTime = todo.workedTime + 1 }
+            { todo | workedTime = todo.previousWorkedTime + (floatFromPosix model.zone model.time) - (floatFromPosix model.zone model.startTime) }
         else
             todo
-    ) todos
+    ) model.todos
+
+floatFromPosix : Time.Zone -> Time.Posix -> Float
+floatFromPosix zone time =
+    (Time.toHour zone time) * 3600 + (Time.toMinute zone time) * 60 + (Time.toSecond zone time) |> toFloat
 
 checkControlKey : String -> Bool -> Bool
 checkControlKey keyStr isShowForm =
@@ -259,10 +272,7 @@ onKeySub =
 
 timerSub : Model -> Sub Msg
 timerSub model =
-    if model.isWorking then
-        Time.every 1000 (\_ -> Tick)
-    else
-        Sub.none
+    Time.every 1000 Tick
 -- END:subscription
 
 -- START:view

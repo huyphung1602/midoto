@@ -5204,11 +5204,28 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $elm$time$Time$Zone = F2(
+	function (a, b) {
+		return {$: 'Zone', a: a, b: b};
+	});
+var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
 var $author$project$Midoto$init = function (_v0) {
 	return _Utils_Tuple2(
-		{inputText: '', isShowForm: false, isWorking: false, todos: _List_Nil},
+		{
+			inputText: '',
+			isShowForm: false,
+			isWorking: false,
+			startTime: $elm$time$Time$millisToPosix(0),
+			time: $elm$time$Time$millisToPosix(0),
+			todos: _List_Nil,
+			zone: $elm$time$Time$utc
+		},
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5636,7 +5653,9 @@ var $elm$browser$Browser$Events$on = F3(
 	});
 var $elm$browser$Browser$Events$onKeyUp = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keyup');
 var $author$project$Midoto$onKeySub = $elm$browser$Browser$Events$onKeyUp($author$project$Midoto$keyDecoder);
-var $author$project$Midoto$Tick = {$: 'Tick'};
+var $author$project$Midoto$Tick = function (a) {
+	return {$: 'Tick', a: a};
+};
 var $elm$time$Time$Every = F2(
 	function (a, b) {
 		return {$: 'Every', a: a, b: b};
@@ -5705,10 +5724,6 @@ var $elm$time$Time$Name = function (a) {
 var $elm$time$Time$Offset = function (a) {
 	return {$: 'Offset', a: a};
 };
-var $elm$time$Time$Zone = F2(
-	function (a, b) {
-		return {$: 'Zone', a: a, b: b};
-	});
 var $elm$time$Time$customZone = $elm$time$Time$Zone;
 var $elm$time$Time$setInterval = _Time_setInterval;
 var $elm$core$Process$spawn = _Scheduler_spawn;
@@ -5800,10 +5815,6 @@ var $elm$time$Time$onEffects = F3(
 				},
 				killTask));
 	});
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
 var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
 var $elm$time$Time$onSelfMsg = F3(
 	function (router, interval, state) {
@@ -5853,14 +5864,8 @@ var $elm$time$Time$every = F2(
 		return $elm$time$Time$subscription(
 			A2($elm$time$Time$Every, interval, tagger));
 	});
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Midoto$timerSub = function (model) {
-	return model.isWorking ? A2(
-		$elm$time$Time$every,
-		1000,
-		function (_v0) {
-			return $author$project$Midoto$Tick;
-		}) : $elm$core$Platform$Sub$none;
+	return A2($elm$time$Time$every, 1000, $author$project$Midoto$Tick);
 };
 var $author$project$Midoto$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(
@@ -5873,9 +5878,9 @@ var $author$project$Midoto$subscriptions = function (model) {
 var $author$project$Midoto$Completed = {$: 'Completed'};
 var $author$project$Midoto$Incomplete = {$: 'Incomplete'};
 var $author$project$Midoto$NoOp = {$: 'NoOp'};
-var $author$project$Midoto$Todo = F4(
-	function (id, name, workedTime, status) {
-		return {id: id, name: name, status: status, workedTime: workedTime};
+var $author$project$Midoto$Todo = F5(
+	function (id, name, workedTime, previousWorkedTime, status) {
+		return {id: id, name: name, previousWorkedTime: previousWorkedTime, status: status, workedTime: workedTime};
 	});
 var $author$project$Midoto$lastElem = function (list) {
 	lastElem:
@@ -5910,7 +5915,7 @@ var $author$project$Midoto$addToTodos = F2(
 			todos,
 			_List_fromArray(
 				[
-					A4($author$project$Midoto$Todo, lastIndex, input, 0, $author$project$Midoto$Incomplete)
+					A5($author$project$Midoto$Todo, lastIndex, input, 0, 0, $author$project$Midoto$Incomplete)
 				]));
 	});
 var $elm$core$Task$onError = _Scheduler_onError;
@@ -5994,14 +5999,7 @@ var $author$project$Midoto$hasActiveTodo = function (todos) {
 };
 var $author$project$Midoto$startTodo = F2(
 	function (index, todos) {
-		return $author$project$Midoto$hasActiveTodo(todos) ? A2(
-			$elm$core$List$map,
-			function (todo) {
-				return _Utils_eq(todo.status, $author$project$Midoto$Active) ? _Utils_update(
-					todo,
-					{status: $author$project$Midoto$Active}) : todo;
-			},
-			todos) : A2(
+		return $author$project$Midoto$hasActiveTodo(todos) ? todos : A2(
 			$elm$core$List$map,
 			function (todo) {
 				return _Utils_eq(todo.id, index) ? _Utils_update(
@@ -6010,15 +6008,103 @@ var $author$project$Midoto$startTodo = F2(
 			},
 			todos);
 	});
-var $author$project$Midoto$updateWorkedTime = function (todos) {
+var $author$project$Midoto$updatePreviousWorkedTime = function (todos) {
+	return A2(
+		$elm$core$List$map,
+		function (todo) {
+			return _Utils_update(
+				todo,
+				{previousWorkedTime: todo.workedTime});
+		},
+		todos);
+};
+var $elm$time$Time$flooredDiv = F2(
+	function (numerator, denominator) {
+		return $elm$core$Basics$floor(numerator / denominator);
+	});
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$time$Time$posixToMillis = function (_v0) {
+	var millis = _v0.a;
+	return millis;
+};
+var $elm$time$Time$toAdjustedMinutesHelp = F3(
+	function (defaultOffset, posixMinutes, eras) {
+		toAdjustedMinutesHelp:
+		while (true) {
+			if (!eras.b) {
+				return posixMinutes + defaultOffset;
+			} else {
+				var era = eras.a;
+				var olderEras = eras.b;
+				if (_Utils_cmp(era.start, posixMinutes) < 0) {
+					return posixMinutes + era.offset;
+				} else {
+					var $temp$defaultOffset = defaultOffset,
+						$temp$posixMinutes = posixMinutes,
+						$temp$eras = olderEras;
+					defaultOffset = $temp$defaultOffset;
+					posixMinutes = $temp$posixMinutes;
+					eras = $temp$eras;
+					continue toAdjustedMinutesHelp;
+				}
+			}
+		}
+	});
+var $elm$time$Time$toAdjustedMinutes = F2(
+	function (_v0, time) {
+		var defaultOffset = _v0.a;
+		var eras = _v0.b;
+		return A3(
+			$elm$time$Time$toAdjustedMinutesHelp,
+			defaultOffset,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				60000),
+			eras);
+	});
+var $elm$time$Time$toHour = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			24,
+			A2(
+				$elm$time$Time$flooredDiv,
+				A2($elm$time$Time$toAdjustedMinutes, zone, time),
+				60));
+	});
+var $elm$time$Time$toMinute = F2(
+	function (zone, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2($elm$time$Time$toAdjustedMinutes, zone, time));
+	});
+var $elm$time$Time$toSecond = F2(
+	function (_v0, time) {
+		return A2(
+			$elm$core$Basics$modBy,
+			60,
+			A2(
+				$elm$time$Time$flooredDiv,
+				$elm$time$Time$posixToMillis(time),
+				1000));
+	});
+var $author$project$Midoto$floatFromPosix = F2(
+	function (zone, time) {
+		return ((A2($elm$time$Time$toHour, zone, time) * 3600) + (A2($elm$time$Time$toMinute, zone, time) * 60)) + A2($elm$time$Time$toSecond, zone, time);
+	});
+var $author$project$Midoto$updateWorkedTime = function (model) {
 	return A2(
 		$elm$core$List$map,
 		function (todo) {
 			return _Utils_eq(todo.status, $author$project$Midoto$Active) ? _Utils_update(
 				todo,
-				{workedTime: todo.workedTime + 1}) : todo;
+				{
+					workedTime: (todo.previousWorkedTime + A2($author$project$Midoto$floatFromPosix, model.zone, model.time)) - A2($author$project$Midoto$floatFromPosix, model.zone, model.startTime)
+				}) : todo;
 		},
-		todos);
+		model.todos);
 };
 var $author$project$Midoto$update = F2(
 	function (msg, model) {
@@ -6123,6 +6209,7 @@ var $author$project$Midoto$update = F2(
 						{
 							inputText: '',
 							isWorking: true,
+							startTime: model.time,
 							todos: A2($author$project$Midoto$startTodo, index, model.todos)
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -6130,14 +6217,20 @@ var $author$project$Midoto$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: '', isWorking: false}),
+						{
+							inputText: '',
+							isWorking: false,
+							todos: $author$project$Midoto$updatePreviousWorkedTime(model.todos)
+						}),
 					$elm$core$Platform$Cmd$none);
 			default:
+				var newTime = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							todos: $author$project$Midoto$updateWorkedTime(model.todos)
+							time: newTime,
+							todos: model.isWorking ? $author$project$Midoto$updateWorkedTime(model) : model.todos
 						}),
 					$elm$core$Platform$Cmd$none);
 		}
