@@ -17,7 +17,7 @@ import Ports
 -- END:import
 
 -- START:main
-main : Program () Model Msg
+main : Program (Maybe String) Model Msg
 main =
     Browser.element
         { init = init
@@ -35,18 +35,18 @@ saveTodos todos =
         |> Ports.storeTodos
 
 
-todoEncoder : Todo -> JsonDecode.Value
+todoEncoder : Todo -> JsonEncode.Value
 todoEncoder todo =
     JsonEncode.object
         [ ( "id", JsonEncode.int todo.id )
         , ( "name", JsonEncode.string todo.name )
         , ( "workedTime", JsonEncode.float todo.workedTime )
         , ( "previousWorkedTime", JsonEncode.float todo.workedTime )
-        , ( "status", JsonEncode.string <| todoStatusToString todo.status )
+        , ( "status", JsonEncode.string <| todoStatusEncoder todo.status )
         ]
 
-todoStatusToString : TodoStatus -> String
-todoStatusToString status =
+todoStatusEncoder : TodoStatus -> String
+todoStatusEncoder status =
     case status of
         Active ->
             "Active"
@@ -54,6 +54,40 @@ todoStatusToString status =
             "Incomplete"
         Completed ->
             "Completed"
+
+todoStatusDecoder : JsonDecode.Decoder TodoStatus
+todoStatusDecoder =
+    JsonDecode.string |>
+        JsonDecode.andThen
+            (\str ->
+                case str of
+                    "Active" -> JsonDecode.succeed Active
+                    "Incomplete" -> JsonDecode.succeed Incomplete
+                    "Completed" -> JsonDecode.succeed Completed
+                    _ -> JsonDecode.fail "Invalid TodoStatus"
+            )
+
+todoDecoder : JsonDecode.Decoder Todo
+todoDecoder =
+    JsonDecode.map5 Todo
+        (JsonDecode.field "id" JsonDecode.int)
+        (JsonDecode.field "name" JsonDecode.string)
+        (JsonDecode.field "workedTime" JsonDecode.float)
+        (JsonDecode.field "previousWorkedTime" JsonDecode.float)
+        (JsonDecode.field "status" todoStatusDecoder)
+
+todosDecoder : JsonDecode.Decoder (List Todo)
+todosDecoder =
+    JsonDecode.list todoDecoder
+
+decodeStoredTodos : String -> List Todo
+decodeStoredTodos todosJson =
+    case JsonDecode.decodeString todosDecoder todosJson of
+        Ok todos ->
+            todos
+        Err _ ->
+            []
+
 -- END:storage
 
 -- START:model
@@ -80,9 +114,17 @@ type alias Model =
     , zone : Time.Zone
     }
 
-init : () -> (Model, Cmd Msg)
-init _ =
-    ( { todos = []
+init : Maybe String -> (Model, Cmd Msg)
+init flags =
+    let
+        initTodos =
+            case flags of
+                Just todosJson ->
+                    decodeStoredTodos todosJson
+                Nothing ->
+                    []
+    in
+    ( { todos = initTodos
       , inputText = ""
       , isShowForm = False
       , isWorking = False

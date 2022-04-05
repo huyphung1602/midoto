@@ -4,8 +4,13 @@
         
     <script src="midoto.js"></script>
     <script>
+      var storedState = localStorage.getItem('todo-app-save');
+      // console.log("Retrieved state: ", storedState);
+      var startingState = storedState ? JSON.parse(storedState) : null;
+
       var app = Elm.Midoto.init({
-        node: document.getElementById("elm-code-is-loaded-here")
+        node: document.getElementById("elm-code-is-loaded-here"),
+        flags: startingState,
       });
       app.ports.storeTodos.subscribe(function(todos) {
         if (todos.length > 0) {

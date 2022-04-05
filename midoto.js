@@ -4401,6 +4401,10 @@ function _Time_getZoneName()
 		callback(_Scheduler_succeed(name));
 	});
 }
+var $elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -4504,10 +4508,6 @@ var $elm$json$Json$Decode$OneOf = function (a) {
 };
 var $elm$core$Basics$False = {$: 'False'};
 var $elm$core$Basics$add = _Basics_add;
-var $elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
@@ -5190,6 +5190,55 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $elm$json$Json$Decode$decodeString = _Json_runOnString;
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $author$project$Midoto$Todo = F5(
+	function (id, name, workedTime, previousWorkedTime, status) {
+		return {id: id, name: name, previousWorkedTime: previousWorkedTime, status: status, workedTime: workedTime};
+	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$map5 = _Json_map5;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Midoto$Active = {$: 'Active'};
+var $author$project$Midoto$Completed = {$: 'Completed'};
+var $author$project$Midoto$Incomplete = {$: 'Incomplete'};
+var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $elm$json$Json$Decode$fail = _Json_fail;
+var $author$project$Midoto$todoStatusDecoder = A2(
+	$elm$json$Json$Decode$andThen,
+	function (str) {
+		switch (str) {
+			case 'Active':
+				return $elm$json$Json$Decode$succeed($author$project$Midoto$Active);
+			case 'Incomplete':
+				return $elm$json$Json$Decode$succeed($author$project$Midoto$Incomplete);
+			case 'Completed':
+				return $elm$json$Json$Decode$succeed($author$project$Midoto$Completed);
+			default:
+				return $elm$json$Json$Decode$fail('Invalid TodoStatus');
+		}
+	},
+	$elm$json$Json$Decode$string);
+var $author$project$Midoto$todoDecoder = A6(
+	$elm$json$Json$Decode$map5,
+	$author$project$Midoto$Todo,
+	A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'workedTime', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'previousWorkedTime', $elm$json$Json$Decode$float),
+	A2($elm$json$Json$Decode$field, 'status', $author$project$Midoto$todoStatusDecoder));
+var $author$project$Midoto$todosDecoder = $elm$json$Json$Decode$list($author$project$Midoto$todoDecoder);
+var $author$project$Midoto$decodeStoredTodos = function (todosJson) {
+	var _v0 = A2($elm$json$Json$Decode$decodeString, $author$project$Midoto$todosDecoder, todosJson);
+	if (_v0.$ === 'Ok') {
+		var todos = _v0.a;
+		return todos;
+	} else {
+		return _List_Nil;
+	}
+};
 var $elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
@@ -5201,7 +5250,15 @@ var $elm$time$Time$Zone = F2(
 		return {$: 'Zone', a: a, b: b};
 	});
 var $elm$time$Time$utc = A2($elm$time$Time$Zone, 0, _List_Nil);
-var $author$project$Midoto$init = function (_v0) {
+var $author$project$Midoto$init = function (flags) {
+	var initTodos = function () {
+		if (flags.$ === 'Just') {
+			var todosJson = flags.a;
+			return $author$project$Midoto$decodeStoredTodos(todosJson);
+		} else {
+			return _List_Nil;
+		}
+	}();
 	return _Utils_Tuple2(
 		{
 			inputText: '',
@@ -5209,14 +5266,14 @@ var $author$project$Midoto$init = function (_v0) {
 			isWorking: false,
 			startTime: $elm$time$Time$millisToPosix(0),
 			time: $elm$time$Time$millisToPosix(0),
-			todos: _List_Nil,
+			todos: initTodos,
 			zone: $elm$time$Time$utc
 		},
 		$elm$core$Platform$Cmd$none);
 };
+var $elm$json$Json$Decode$null = _Json_decodeNull;
+var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Midoto$PressCharacter = function (a) {
 	return {$: 'PressCharacter', a: a};
 };
@@ -5861,13 +5918,7 @@ var $author$project$Midoto$subscriptions = function (model) {
 				$author$project$Midoto$timerSub(model)
 			]));
 };
-var $author$project$Midoto$Completed = {$: 'Completed'};
-var $author$project$Midoto$Incomplete = {$: 'Incomplete'};
 var $author$project$Midoto$NoOp = {$: 'NoOp'};
-var $author$project$Midoto$Todo = F5(
-	function (id, name, workedTime, previousWorkedTime, status) {
-		return {id: id, name: name, previousWorkedTime: previousWorkedTime, status: status, workedTime: workedTime};
-	});
 var $author$project$Midoto$lastElem = function (list) {
 	lastElem:
 	while (true) {
@@ -5975,7 +6026,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 			_Json_emptyObject(_Utils_Tuple0),
 			pairs));
 };
-var $author$project$Midoto$todoStatusToString = function (status) {
+var $author$project$Midoto$todoStatusEncoder = function (status) {
 	switch (status.$) {
 		case 'Active':
 			return 'Active';
@@ -6004,7 +6055,7 @@ var $author$project$Midoto$todoEncoder = function (todo) {
 				_Utils_Tuple2(
 				'status',
 				$elm$json$Json$Encode$string(
-					$author$project$Midoto$todoStatusToString(todo.status)))
+					$author$project$Midoto$todoStatusEncoder(todo.status)))
 			]));
 };
 var $author$project$Midoto$saveTodos = function (todos) {
@@ -6014,7 +6065,6 @@ var $author$project$Midoto$saveTodos = function (todos) {
 			0,
 			A2($elm$json$Json$Encode$list, $author$project$Midoto$todoEncoder, todos)));
 };
-var $author$project$Midoto$Active = {$: 'Active'};
 var $author$project$Midoto$setActiveTodo = F2(
 	function (index, todos) {
 		return A2(
@@ -6748,4 +6798,9 @@ var $author$project$Midoto$view = function (model) {
 var $author$project$Midoto$main = $elm$browser$Browser$element(
 	{init: $author$project$Midoto$init, subscriptions: $author$project$Midoto$subscriptions, update: $author$project$Midoto$update, view: $author$project$Midoto$view});
 _Platform_export({'Midoto':{'init':$author$project$Midoto$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+	$elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				$elm$json$Json$Decode$null($elm$core$Maybe$Nothing),
+				A2($elm$json$Json$Decode$map, $elm$core$Maybe$Just, $elm$json$Json$Decode$string)
+			])))(0)}});}(this));
