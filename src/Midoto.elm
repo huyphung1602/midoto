@@ -96,6 +96,10 @@ type TodoStatus
     | Incomplete
     | Completed
 
+type RightPanel
+    = CommandList
+    | CompletedTodos
+
 type alias Todo =
     { id : Int
     , name : String
@@ -112,6 +116,7 @@ type alias Model =
     , time : Time.Posix
     , startTime : Time.Posix
     , zone : Time.Zone
+    , rightPanel : RightPanel
     }
 
 init : Maybe String -> (Model, Cmd Msg)
@@ -131,6 +136,7 @@ init flags =
       , time = Time.millisToPosix 0
       , startTime = Time.millisToPosix 0
       , zone = Time.utc
+      , rightPanel = CommandList
       }
     , Cmd.none
     )
@@ -149,6 +155,7 @@ type Msg
     | ActiveOn Int
     | Start Int
     | Stop
+    | Show RightPanel
     | Tick Time.Posix
 
 
@@ -253,6 +260,12 @@ update msg model =
             ({ model
                 | time = newTime
                 , todos = if model.isWorking then updateWorkedTime model else model.todos
+            }
+            , Cmd.none
+            )
+        Show newRightPanel ->
+            ({ model
+                | rightPanel = newRightPanel
             }
             , Cmd.none
             )
@@ -396,10 +409,50 @@ view model =
             , div
                 styleApplicationBody
                 [ div styleOfListBox <| (h3 [style "margin-left" "20px"] [ text "On Going Tasks" ])::(List.map viewTodo <| onGoingTodos model.todos)
-                , div styleOfListBox <| (h3 [style "margin-left" "20px"] [ text "Completed Tasks" ])::(List.map viewTodo <| completedTodos model.todos)
+                , div styleOfListBox <| viewRightPanel model
                 ]
 
         ]
+
+viewRightPanel : Model -> List (Html Msg)
+viewRightPanel model =
+    case model.rightPanel of
+        CommandList ->
+            viewCommandList commandStrings
+        CompletedTodos ->
+            viewCompletedTodos model.todos
+
+viewCompletedTodos : List Todo -> List (Html Msg)
+viewCompletedTodos todos =
+    (h3 [style "margin-left" "20px"] [ text "Completed Tasks" ])::(List.map viewTodo <| completedTodos todos)
+
+viewCommandList : List String -> List (Html Msg)
+viewCommandList cmdStrings =
+    (h3 [style "margin-left" "20px"] [ text "List of Commands" ])::(List.map viewCommand <| cmdStrings)
+
+viewCommand : String -> Html Msg
+viewCommand cmdString =
+    p [style "line-height" "32px"]
+        [ div
+            [ style "margin-left" "16px"
+            , style "margin-right" "16px"
+            ]
+            [ span [] [ text cmdString ]
+            ]
+        ]
+
+commandStrings : List String
+commandStrings =
+    [ "- /add or /a [your task name] or only [your task name]"
+    , "- /wk [task index] to select working task"
+    , "- /start to start or continue counting working time on a task"
+    , "- /stop to stop working time on a task"
+    , "- /check or /c [task index] to complete a task"
+    , "- /uncheck or /uc [task index] to incomplete a task"
+    , "- /delete or /d [task index] to delete a task"
+    , "- /0 to show the list of commands"
+    , "- /1 to show the completed tasks"
+    ]
 
 viewTodo : (Int, Todo) -> Html Msg
 viewTodo (uiIndex, todo) =
@@ -507,6 +560,10 @@ parseMsg list todos =
                             NoOp
                 "/stop" ->
                     Stop
+                "/0" ->
+                    Show CommandList
+                "/1" ->
+                    Show CompletedTodos
                 _ ->
                     NoOp
         x::xs ->

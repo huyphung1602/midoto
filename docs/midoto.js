@@ -5190,6 +5190,7 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$element = _Browser_element;
+var $author$project$Midoto$CommandList = {$: 'CommandList'};
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$json$Json$Decode$list = _Json_decodeList;
 var $author$project$Midoto$Todo = F5(
@@ -5264,6 +5265,7 @@ var $author$project$Midoto$init = function (flags) {
 			inputText: '',
 			isShowForm: false,
 			isWorking: false,
+			rightPanel: $author$project$Midoto$CommandList,
 			startTime: $elm$time$Time$millisToPosix(0),
 			time: $elm$time$Time$millisToPosix(0),
 			todos: initTodos,
@@ -6307,7 +6309,7 @@ var $author$project$Midoto$update = F2(
 						model,
 						{inputText: '', isWorking: false, todos: newTodos}),
 					$author$project$Midoto$saveTodos(newTodos));
-			default:
+			case 'Tick':
 				var newTime = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -6317,24 +6319,17 @@ var $author$project$Midoto$update = F2(
 							todos: model.isWorking ? $author$project$Midoto$updateWorkedTime(model) : model.todos
 						}),
 					$elm$core$Platform$Cmd$none);
+			default:
+				var newRightPanel = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{rightPanel: newRightPanel}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Midoto$ChangeInput = function (a) {
 	return {$: 'ChangeInput', a: a};
-};
-var $author$project$Midoto$completedTodos = function (todos) {
-	return A2(
-		$elm$core$List$indexedMap,
-		F2(
-			function (x, y) {
-				return _Utils_Tuple2(x + 1, y);
-			}),
-		A2(
-			$elm$core$List$filter,
-			function (todo) {
-				return _Utils_eq(todo.status, $author$project$Midoto$Completed);
-			},
-			todos));
 };
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
@@ -6436,8 +6431,12 @@ var $author$project$Midoto$AddTodo = function (a) {
 var $author$project$Midoto$Check = function (a) {
 	return {$: 'Check', a: a};
 };
+var $author$project$Midoto$CompletedTodos = {$: 'CompletedTodos'};
 var $author$project$Midoto$Delete = function (a) {
 	return {$: 'Delete', a: a};
+};
+var $author$project$Midoto$Show = function (a) {
+	return {$: 'Show', a: a};
 };
 var $author$project$Midoto$Start = function (a) {
 	return {$: 'Start', a: a};
@@ -6445,6 +6444,20 @@ var $author$project$Midoto$Start = function (a) {
 var $author$project$Midoto$Stop = {$: 'Stop'};
 var $author$project$Midoto$Uncheck = function (a) {
 	return {$: 'Uncheck', a: a};
+};
+var $author$project$Midoto$completedTodos = function (todos) {
+	return A2(
+		$elm$core$List$indexedMap,
+		F2(
+			function (x, y) {
+				return _Utils_Tuple2(x + 1, y);
+			}),
+		A2(
+			$elm$core$List$filter,
+			function (todo) {
+				return _Utils_eq(todo.status, $author$project$Midoto$Completed);
+			},
+			todos));
 };
 var $elm$core$List$head = function (list) {
 	if (list.b) {
@@ -6539,6 +6552,10 @@ var $author$project$Midoto$parseMsg = F2(
 						}
 					case '/stop':
 						return $author$project$Midoto$Stop;
+					case '/0':
+						return $author$project$Midoto$Show($author$project$Midoto$CommandList);
+					case '/1':
+						return $author$project$Midoto$Show($author$project$Midoto$CompletedTodos);
 					default:
 						return $author$project$Midoto$NoOp;
 				}
@@ -6639,7 +6656,53 @@ var $author$project$Midoto$tokenize = function (input) {
 	return $elm$core$String$words(input);
 };
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$Midoto$commandStrings = _List_fromArray(
+	['- /add or /a [your task name] or only [your task name]', '- /wk [task index] to select working task', '- /start to start or continue counting working time on a task', '- /stop to stop working time on a task', '- /check or /c [task index] to complete a task', '- /uncheck or /uc [task index] to incomplete a task', '- /delete or /d [task index] to delete a task', '- /0 to show the list of commands', '- /1 to show the completed tasks']);
 var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $author$project$Midoto$viewCommand = function (cmdString) {
+	return A2(
+		$elm$html$Html$p,
+		_List_fromArray(
+			[
+				A2($elm$html$Html$Attributes$style, 'line-height', '32px')
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						A2($elm$html$Html$Attributes$style, 'margin-left', '16px'),
+						A2($elm$html$Html$Attributes$style, 'margin-right', '16px')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$span,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text(cmdString)
+							]))
+					]))
+			]));
+};
+var $author$project$Midoto$viewCommandList = function (cmdStrings) {
+	return A2(
+		$elm$core$List$cons,
+		A2(
+			$elm$html$Html$h3,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'margin-left', '20px')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('List of Commands')
+				])),
+		A2($elm$core$List$map, $author$project$Midoto$viewCommand, cmdStrings));
+};
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $author$project$Midoto$toTwoCharString = function (num) {
 	return (num > 9) ? $elm$core$String$fromFloat(num) : ('0' + $elm$core$String$fromFloat(num));
@@ -6653,7 +6716,6 @@ var $author$project$Midoto$parseWorkingTimeToString = function (workingTime) {
 	var seconds = (workingTime - (hoursRounded * 3600)) - (minutesRouded * 60);
 	return $elm$core$String$fromFloat(hoursRounded) + (':' + ($author$project$Midoto$toTwoCharString(minutesRouded) + (':' + $author$project$Midoto$toTwoCharString(seconds))));
 };
-var $elm$html$Html$span = _VirtualDom_node('span');
 var $author$project$Midoto$viewTodo = function (_v0) {
 	var uiIndex = _v0.a;
 	var todo = _v0.b;
@@ -6705,6 +6767,32 @@ var $author$project$Midoto$viewTodo = function (_v0) {
 							]))
 					]))
 			]));
+};
+var $author$project$Midoto$viewCompletedTodos = function (todos) {
+	return A2(
+		$elm$core$List$cons,
+		A2(
+			$elm$html$Html$h3,
+			_List_fromArray(
+				[
+					A2($elm$html$Html$Attributes$style, 'margin-left', '20px')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text('Completed Tasks')
+				])),
+		A2(
+			$elm$core$List$map,
+			$author$project$Midoto$viewTodo,
+			$author$project$Midoto$completedTodos(todos)));
+};
+var $author$project$Midoto$viewRightPanel = function (model) {
+	var _v0 = model.rightPanel;
+	if (_v0.$ === 'CommandList') {
+		return $author$project$Midoto$viewCommandList($author$project$Midoto$commandStrings);
+	} else {
+		return $author$project$Midoto$viewCompletedTodos(model.todos);
+	}
 };
 var $author$project$Midoto$view = function (model) {
 	return A2(
@@ -6777,22 +6865,7 @@ var $author$project$Midoto$view = function (model) {
 						A2(
 						$elm$html$Html$div,
 						$author$project$Midoto$styleOfListBox,
-						A2(
-							$elm$core$List$cons,
-							A2(
-								$elm$html$Html$h3,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$style, 'margin-left', '20px')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Completed Tasks')
-									])),
-							A2(
-								$elm$core$List$map,
-								$author$project$Midoto$viewTodo,
-								$author$project$Midoto$completedTodos(model.todos))))
+						$author$project$Midoto$viewRightPanel(model))
 					]))
 			]));
 };
