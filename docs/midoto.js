@@ -6525,7 +6525,7 @@ var $author$project$Midoto$parseMsg = F2(
 				var x = list.a;
 				var _v1 = $elm$core$String$toLower(x);
 				switch (_v1) {
-					case 'start':
+					case '/start':
 						var _v2 = $elm$core$List$head(
 							A2(
 								$elm$core$List$map,
@@ -6537,7 +6537,7 @@ var $author$project$Midoto$parseMsg = F2(
 						} else {
 							return $author$project$Midoto$NoOp;
 						}
-					case 'stop':
+					case '/stop':
 						return $author$project$Midoto$Stop;
 					default:
 						return $author$project$Midoto$NoOp;
@@ -6547,47 +6547,47 @@ var $author$project$Midoto$parseMsg = F2(
 				var xs = list.b;
 				var _v3 = $elm$core$String$toLower(x);
 				switch (_v3) {
-					case 'add':
+					case '/add':
 						return $author$project$Midoto$AddTodo(xs);
-					case 'a':
+					case '/a':
 						return $author$project$Midoto$AddTodo(xs);
-					case 'check':
+					case '/check':
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
 							$author$project$Midoto$Check,
 							xs,
 							$author$project$Midoto$onGoingTodos(todos));
-					case 'c':
+					case '/c':
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
 							$author$project$Midoto$Check,
 							xs,
 							$author$project$Midoto$onGoingTodos(todos));
-					case 'uncheck':
+					case '/uncheck':
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
 							$author$project$Midoto$Uncheck,
 							xs,
 							$author$project$Midoto$completedTodos(todos));
-					case 'uc':
+					case '/uc':
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
 							$author$project$Midoto$Uncheck,
 							xs,
 							$author$project$Midoto$completedTodos(todos));
-					case 'delete':
+					case '/delete':
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
 							$author$project$Midoto$Delete,
 							xs,
 							$author$project$Midoto$onGoingTodos(todos));
-					case 'd':
+					case '/d':
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
 							$author$project$Midoto$Delete,
 							xs,
 							$author$project$Midoto$onGoingTodos(todos));
-					case 'wk':
+					case '/wk':
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
 							$author$project$Midoto$ActiveOn,
@@ -6608,7 +6608,8 @@ var $author$project$Midoto$styleApplicationBody = _List_fromArray(
 		A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
 		A2($elm$html$Html$Attributes$style, 'padding-right', '50px'),
 		A2($elm$html$Html$Attributes$style, 'width', '100%'),
-		A2($elm$html$Html$Attributes$style, 'height', '100%')
+		A2($elm$html$Html$Attributes$style, 'height', '100%'),
+		A2($elm$html$Html$Attributes$style, 'overflow', 'hidden')
 	]);
 var $author$project$Midoto$styleInputBox = _List_fromArray(
 	[
@@ -6629,7 +6630,7 @@ var $author$project$Midoto$styleOfListBox = _List_fromArray(
 		A2($elm$html$Html$Attributes$style, 'width', '40%'),
 		A2($elm$html$Html$Attributes$style, 'height', '80%'),
 		A2($elm$html$Html$Attributes$style, 'font-size', '16px'),
-		A2($elm$html$Html$Attributes$style, 'overflow', 'auto')
+		A2($elm$html$Html$Attributes$style, 'overflow', 'hidden')
 	]);
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;

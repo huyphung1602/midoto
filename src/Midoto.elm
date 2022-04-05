@@ -499,35 +499,35 @@ parseMsg list todos =
             NoOp
         [x] ->
             case String.toLower x of
-                "start" ->
+                "/start" ->
                     case (List.map Tuple.first (onGoingTodos todos) |> List.head) of
                         Just i ->
                             Start i
                         Nothing ->
                             NoOp
-                "stop" ->
+                "/stop" ->
                     Stop
                 _ ->
                     NoOp
         x::xs ->
             case String.toLower x of
-                "add" ->
+                "/add" ->
                     AddTodo xs
-                "a" ->
+                "/a" ->
                     AddTodo xs
-                "check" ->
+                "/check" ->
                     parseCommandUseIndex Check xs (onGoingTodos todos)
-                "c" ->
+                "/c" ->
                     parseCommandUseIndex Check xs (onGoingTodos todos)
-                "uncheck" ->
+                "/uncheck" ->
                     parseCommandUseIndex Uncheck xs (completedTodos todos)
-                "uc" ->
+                "/uc" ->
                     parseCommandUseIndex Uncheck xs (completedTodos todos)
-                "delete" ->
+                "/delete" ->
                     parseCommandUseIndex Delete xs (onGoingTodos todos)
-                "d" ->
+                "/d" ->
                     parseCommandUseIndex Delete xs (onGoingTodos todos)
-                "wk" ->
+                "/wk" ->
                     parseCommandUseIndex ActiveOn xs (onGoingTodos todos)
                 _ ->
                     AddTodo list
@@ -548,6 +548,7 @@ styleApplicationBody =
     , style "padding-right" "50px"
     , style "width" "100%"
     , style "height" "100%"
+    , style "overflow" "hidden"
     ]
 
 styleOfListBox : List (Html.Attribute msg)
@@ -558,7 +559,7 @@ styleOfListBox =
     , style "width" "40%"
     , style "height" "80%"
     , style "font-size" "16px"
-    , style "overflow" "auto"
+    , style "overflow" "hidden"
     ]
 
 styleInputBox : List (Html.Attribute msg)
