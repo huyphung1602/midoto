@@ -5240,6 +5240,7 @@ var $author$project$Midoto$decodeStoredTodos = function (todosJson) {
 		return _List_Nil;
 	}
 };
+var $author$project$Midoto$defaultInputText = '/';
 var $elm$time$Time$Posix = function (a) {
 	return {$: 'Posix', a: a};
 };
@@ -5262,7 +5263,7 @@ var $author$project$Midoto$init = function (flags) {
 	}();
 	return _Utils_Tuple2(
 		{
-			inputText: '',
+			inputText: $author$project$Midoto$defaultInputText,
 			isShowForm: false,
 			isWorking: false,
 			rightPanel: $author$project$Midoto$CommandList,
@@ -6249,7 +6250,7 @@ var $author$project$Midoto$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: ''}),
+						{inputText: $author$project$Midoto$defaultInputText}),
 					$elm$core$Platform$Cmd$none);
 			case 'AddTodo':
 				var options = msg.a;
@@ -6260,7 +6261,7 @@ var $author$project$Midoto$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: '', todos: newTodos}),
+						{inputText: $author$project$Midoto$defaultInputText, todos: newTodos}),
 					$author$project$Midoto$saveTodos(newTodos));
 			case 'Check':
 				var index = msg.a;
@@ -6268,7 +6269,7 @@ var $author$project$Midoto$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: '', todos: newTodos}),
+						{inputText: $author$project$Midoto$defaultInputText, todos: newTodos}),
 					$author$project$Midoto$saveTodos(newTodos));
 			case 'Uncheck':
 				var index = msg.a;
@@ -6276,7 +6277,7 @@ var $author$project$Midoto$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: '', todos: newTodos}),
+						{inputText: $author$project$Midoto$defaultInputText, todos: newTodos}),
 					$author$project$Midoto$saveTodos(newTodos));
 			case 'Delete':
 				var index = msg.a;
@@ -6284,7 +6285,7 @@ var $author$project$Midoto$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: '', todos: newTodos}),
+						{inputText: $author$project$Midoto$defaultInputText, todos: newTodos}),
 					$author$project$Midoto$saveTodos(newTodos));
 			case 'ActiveOn':
 				var index = msg.a;
@@ -6292,7 +6293,7 @@ var $author$project$Midoto$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: '', todos: newTodos}),
+						{inputText: $author$project$Midoto$defaultInputText, todos: newTodos}),
 					$author$project$Midoto$saveTodos(newTodos));
 			case 'Start':
 				var index = msg.a;
@@ -6300,14 +6301,14 @@ var $author$project$Midoto$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: '', isWorking: true, startTime: model.time, todos: newTodos}),
+						{inputText: $author$project$Midoto$defaultInputText, isWorking: true, startTime: model.time, todos: newTodos}),
 					$author$project$Midoto$saveTodos(newTodos));
 			case 'Stop':
 				var newTodos = $author$project$Midoto$updatePreviousWorkedTime(model.todos);
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{inputText: '', isWorking: false, todos: newTodos}),
+						{inputText: $author$project$Midoto$defaultInputText, isWorking: false, todos: newTodos}),
 					$author$project$Midoto$saveTodos(newTodos));
 			case 'Tick':
 				var newTime = msg.a;
@@ -6642,12 +6643,13 @@ var $author$project$Midoto$styleInputBox = _List_fromArray(
 var $author$project$Midoto$styleOfListBox = _List_fromArray(
 	[
 		A2($elm$html$Html$Attributes$style, 'padding', '10px'),
-		A2($elm$html$Html$Attributes$style, 'border', '1px solid #666'),
+		A2($elm$html$Html$Attributes$style, 'border', '1px solid #d1d1d1'),
 		A2($elm$html$Html$Attributes$style, 'border-radius', '4px'),
 		A2($elm$html$Html$Attributes$style, 'width', '40%'),
 		A2($elm$html$Html$Attributes$style, 'height', '80%'),
 		A2($elm$html$Html$Attributes$style, 'font-size', '16px'),
-		A2($elm$html$Html$Attributes$style, 'overflow', 'hidden')
+		A2($elm$html$Html$Attributes$style, 'overflow', 'hidden'),
+		A2($elm$html$Html$Attributes$style, 'box-shadow', '0 3px 10px rgb(0 0 0 / 0.2)')
 	]);
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;

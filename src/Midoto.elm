@@ -119,6 +119,9 @@ type alias Model =
     , rightPanel : RightPanel
     }
 
+defaultInputText : String
+defaultInputText = "/"
+
 init : Maybe String -> (Model, Cmd Msg)
 init flags =
     let
@@ -130,7 +133,7 @@ init flags =
                     []
     in
     ( { todos = initTodos
-      , inputText = ""
+      , inputText = defaultInputText
       , isShowForm = False
       , isWorking = False
       , time = Time.millisToPosix 0
@@ -180,7 +183,7 @@ update msg model =
             , Cmd.none
             )
         NoOp ->
-            ({ model | inputText = "" }
+            ({ model | inputText = defaultInputText }
             , Cmd.none
             )         
         AddTodo options ->
@@ -189,7 +192,7 @@ update msg model =
             in
             ({ model
                 | todos = newTodos
-                , inputText = ""
+                , inputText = defaultInputText
             }
             , saveTodos newTodos
             )
@@ -199,7 +202,7 @@ update msg model =
             in
             ({ model
                 | todos = newTodos
-                , inputText = ""
+                , inputText = defaultInputText
             }
             , saveTodos newTodos
             )
@@ -209,7 +212,7 @@ update msg model =
             in
             ({ model
                 | todos = newTodos
-                , inputText = ""
+                , inputText = defaultInputText
             }
             , saveTodos newTodos
             )
@@ -219,7 +222,7 @@ update msg model =
             in
             ({ model
                 | todos = newTodos
-                , inputText = ""
+                , inputText = defaultInputText
             }
             , saveTodos newTodos
             )
@@ -229,7 +232,7 @@ update msg model =
             in
             ({ model
                 | todos = newTodos
-                , inputText = ""
+                , inputText = defaultInputText
             }
             , saveTodos newTodos
             )
@@ -241,7 +244,7 @@ update msg model =
                 | isWorking = True
                 , startTime = model.time
                 , todos = newTodos
-                , inputText = ""
+                , inputText = defaultInputText
             }
             , saveTodos newTodos
             )
@@ -251,7 +254,7 @@ update msg model =
             in
             ({ model
                 | isWorking = False
-                , inputText = ""
+                , inputText = defaultInputText
                 , todos = newTodos
             }
             , saveTodos newTodos
@@ -643,12 +646,13 @@ styleApplicationBody =
 styleOfListBox : List (Html.Attribute msg)
 styleOfListBox =
     [ style "padding" "10px"
-    , style "border" "1px solid #666"
+    , style "border" "1px solid #d1d1d1"
     , style "border-radius" "4px"
     , style "width" "40%"
     , style "height" "80%"
     , style "font-size" "16px"
     , style "overflow" "hidden"
+    , style "box-shadow" "0 3px 10px rgb(0 0 0 / 0.2)"
     ]
 
 styleInputBox : List (Html.Attribute msg)
