@@ -485,19 +485,6 @@ commandElements =
         , text " to show the completed tasks"
         ]
     ]
-commandStrings : List String
-commandStrings =
-    [ "- Press i to show the command palette"
-    , "- /add or /a [your task name] or only [your task name]"
-    , "- /wk [task index] to select working task"
-    , "- /start to start or continue counting working time on a task"
-    , "- /stop to stop working time on a task"
-    , "- /check or /c [task index] to complete a task"
-    , "- /uncheck or /uc [task index] to incomplete a task"
-    , "- /delete or /d [task index] to delete a task"
-    , "- /0 to show the list of commands"
-    , "- /1 to show the completed tasks"
-    ]
 
 viewTodo : (Int, Todo) -> Html Msg
 viewTodo (uiIndex, todo) =
