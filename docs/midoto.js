@@ -6656,11 +6656,161 @@ var $author$project$Midoto$tokenize = function (input) {
 	return $elm$core$String$words(input);
 };
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$Midoto$commandStrings = _List_fromArray(
-	['- /add or /a [your task name] or only [your task name]', '- /wk [task index] to select working task', '- /start to start or continue counting working time on a task', '- /stop to stop working time on a task', '- /check or /c [task index] to complete a task', '- /uncheck or /uc [task index] to incomplete a task', '- /delete or /d [task index] to delete a task', '- /0 to show the list of commands', '- /1 to show the completed tasks']);
-var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$html$Html$span = _VirtualDom_node('span');
-var $author$project$Midoto$viewCommand = function (cmdString) {
+var $elm$html$Html$strong = _VirtualDom_node('strong');
+var $author$project$Midoto$commandElements = _List_fromArray(
+	[
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Press i')
+					])),
+				$elm$html$Html$text(' to show the command palette')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/add or /a')
+					])),
+				$elm$html$Html$text(' [your task name] or'),
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text(' type your task name')
+					])),
+				$elm$html$Html$text(' to add a new task')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/wk')
+					])),
+				$elm$html$Html$text(' [task index] to select working task')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/start')
+					])),
+				$elm$html$Html$text(' to start or continue counting working time on a task')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/stop')
+					])),
+				$elm$html$Html$text(' to stop working time on a task')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/check or /c')
+					])),
+				$elm$html$Html$text(' [task index] to complete a task')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/uncheck or /u')
+					])),
+				$elm$html$Html$text(' [task index] to complete a task')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/delete or /d')
+					])),
+				$elm$html$Html$text(' [task index] to delete a task')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/0')
+					])),
+				$elm$html$Html$text(' to show the list of commands')
+			])),
+		A2(
+		$elm$html$Html$span,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/1')
+					])),
+				$elm$html$Html$text(' to show the completed tasks')
+			]))
+	]);
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $author$project$Midoto$viewCommand = function (cmdElement) {
 	return A2(
 		$elm$html$Html$p,
 		_List_fromArray(
@@ -6677,18 +6827,10 @@ var $author$project$Midoto$viewCommand = function (cmdString) {
 						A2($elm$html$Html$Attributes$style, 'margin-right', '16px')
 					]),
 				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$span,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text(cmdString)
-							]))
-					]))
+					[cmdElement]))
 			]));
 };
-var $author$project$Midoto$viewCommandList = function (cmdStrings) {
+var $author$project$Midoto$viewCommandList = function (cmdElems) {
 	return A2(
 		$elm$core$List$cons,
 		A2(
@@ -6701,7 +6843,7 @@ var $author$project$Midoto$viewCommandList = function (cmdStrings) {
 				[
 					$elm$html$Html$text('List of Commands')
 				])),
-		A2($elm$core$List$map, $author$project$Midoto$viewCommand, cmdStrings));
+		A2($elm$core$List$map, $author$project$Midoto$viewCommand, cmdElems));
 };
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $author$project$Midoto$toTwoCharString = function (num) {
@@ -6789,7 +6931,7 @@ var $author$project$Midoto$viewCompletedTodos = function (todos) {
 var $author$project$Midoto$viewRightPanel = function (model) {
 	var _v0 = model.rightPanel;
 	if (_v0.$ === 'CommandList') {
-		return $author$project$Midoto$viewCommandList($author$project$Midoto$commandStrings);
+		return $author$project$Midoto$viewCommandList($author$project$Midoto$commandElements);
 	} else {
 		return $author$project$Midoto$viewCompletedTodos(model.todos);
 	}

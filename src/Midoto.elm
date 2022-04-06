@@ -418,7 +418,7 @@ viewRightPanel : Model -> List (Html Msg)
 viewRightPanel model =
     case model.rightPanel of
         CommandList ->
-            viewCommandList commandStrings
+            viewCommandList commandElements
         CompletedTodos ->
             viewCompletedTodos model.todos
 
@@ -426,24 +426,69 @@ viewCompletedTodos : List Todo -> List (Html Msg)
 viewCompletedTodos todos =
     (h3 [style "margin-left" "20px"] [ text "Completed Tasks" ])::(List.map viewTodo <| completedTodos todos)
 
-viewCommandList : List String -> List (Html Msg)
-viewCommandList cmdStrings =
-    (h3 [style "margin-left" "20px"] [ text "List of Commands" ])::(List.map viewCommand <| cmdStrings)
+viewCommandList : List (Html Msg) -> List (Html Msg)
+viewCommandList cmdElems =
+    (h3 [style "margin-left" "20px"] [ text "List of Commands" ])::(List.map viewCommand <| cmdElems)
 
-viewCommand : String -> Html Msg
-viewCommand cmdString =
+viewCommand : Html Msg -> Html Msg
+viewCommand cmdElement =
     p [style "line-height" "32px"]
         [ div
             [ style "margin-left" "16px"
             , style "margin-right" "16px"
             ]
-            [ span [] [ text cmdString ]
-            ]
+            [ cmdElement ]
         ]
 
+commandElements : List (Html Msg)
+commandElements =
+    [ span []
+        [ strong [] [ text "Press i" ]
+        , text " to show the command palette"
+        ]
+    , span []
+        [ strong [] [ text "/add or /a" ]
+        , text " [your task name] or"
+        , strong [] [ text " type your task name" ]
+        , text " to add a new task"
+        ]
+    , span []
+        [ strong [] [ text "/wk" ]
+        , text " [task index] to select working task"
+        ]
+    , span []
+        [ strong [] [ text "/start" ]
+        , text " to start or continue counting working time on a task"
+        ]
+    , span []
+        [ strong [] [ text "/stop" ]
+        , text " to stop working time on a task"
+        ]
+    , span []
+        [ strong [] [ text "/check or /c" ]
+        , text " [task index] to complete a task"
+        ]
+    , span []
+        [ strong [] [ text "/uncheck or /u" ]
+        , text " [task index] to complete a task"
+        ]
+    , span []
+        [ strong [] [ text "/delete or /d" ]
+        , text " [task index] to delete a task"
+        ]
+    , span []
+        [ strong [] [ text "/0" ]
+        , text " to show the list of commands"
+        ]
+    , span []
+        [ strong [] [ text "/1" ]
+        , text " to show the completed tasks"
+        ]
+    ]
 commandStrings : List String
 commandStrings =
-    [ "- /add or /a [your task name] or only [your task name]"
+    [ "- Press i to show the command palette"
+    , "- /add or /a [your task name] or only [your task name]"
     , "- /wk [task index] to select working task"
     , "- /start to start or continue counting working time on a task"
     , "- /stop to stop working time on a task"
