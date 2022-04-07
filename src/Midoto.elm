@@ -238,7 +238,7 @@ update msg model =
             )
         Start index->
             let
-                newTodos = startTodo index model.todos
+                newTodos = updatePreviousWorkedTime model.todos |> startTodo index
             in
             ({ model
                 | isWorking = True
@@ -321,15 +321,12 @@ hasActiveTodo todos =
 
 startTodo : Int -> List Todo -> List Todo
 startTodo index todos =
-    if hasActiveTodo todos then
-        todos
-    else
-        List.map (\todo ->
-            if todo.id == index then
-                { todo | status = Active }
-            else
-                todo
-        ) todos
+    List.map (\todo ->
+        if todo.id == index then
+            { todo | status = Active }
+        else
+            { todo | status = Incomplete }
+    ) todos
 
 deleteTodo : Int -> List Todo -> List Todo
 deleteTodo index todos =
@@ -461,7 +458,9 @@ commandElements =
         ]
     , span []
         [ strong [] [ text "/start" ]
-        , text " to start or continue counting working time on a task"
+        , text " to start or continue counting working time on a task. "
+        , strong [] [ text "/start" ]
+        , text " [task index] to select a working task and start it at the same time."
         ]
     , span []
         [ strong [] [ text "/stop" ]
@@ -588,11 +587,7 @@ parseMsg list todos =
         [x] ->
             case String.toLower x of
                 "/start" ->
-                    case (List.map Tuple.first (onGoingTodos todos) |> List.head) of
-                        Just i ->
-                            Start i
-                        Nothing ->
-                            NoOp
+                    parseCommandUseIndex Start ["1"] (onGoingTodos todos)
                 "/stop" ->
                     Stop
                 "/0" ->
@@ -621,6 +616,8 @@ parseMsg list todos =
                     parseCommandUseIndex Delete xs (onGoingTodos todos)
                 "/wk" ->
                     parseCommandUseIndex ActiveOn xs (onGoingTodos todos)
+                "/start" ->
+                    parseCommandUseIndex Start xs (onGoingTodos todos)
                 _ ->
                     AddTodo list
 

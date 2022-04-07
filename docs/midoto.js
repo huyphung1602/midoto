@@ -6092,23 +6092,16 @@ var $author$project$Midoto$setCompleteTodo = F3(
 			},
 			todos);
 	});
-var $author$project$Midoto$hasActiveTodo = function (todos) {
-	return $elm$core$List$length(
-		A2(
-			$elm$core$List$filter,
-			function (todo) {
-				return _Utils_eq(todo.status, $author$project$Midoto$Active);
-			},
-			todos)) > 0;
-};
 var $author$project$Midoto$startTodo = F2(
 	function (index, todos) {
-		return $author$project$Midoto$hasActiveTodo(todos) ? todos : A2(
+		return A2(
 			$elm$core$List$map,
 			function (todo) {
 				return _Utils_eq(todo.id, index) ? _Utils_update(
 					todo,
-					{status: $author$project$Midoto$Active}) : todo;
+					{status: $author$project$Midoto$Active}) : _Utils_update(
+					todo,
+					{status: $author$project$Midoto$Incomplete});
 			},
 			todos);
 	});
@@ -6297,7 +6290,10 @@ var $author$project$Midoto$update = F2(
 					$author$project$Midoto$saveTodos(newTodos));
 			case 'Start':
 				var index = msg.a;
-				var newTodos = A2($author$project$Midoto$startTodo, index, model.todos);
+				var newTodos = A2(
+					$author$project$Midoto$startTodo,
+					index,
+					$author$project$Midoto$updatePreviousWorkedTime(model.todos));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -6540,17 +6536,12 @@ var $author$project$Midoto$parseMsg = F2(
 				var _v1 = $elm$core$String$toLower(x);
 				switch (_v1) {
 					case '/start':
-						var _v2 = $elm$core$List$head(
-							A2(
-								$elm$core$List$map,
-								$elm$core$Tuple$first,
-								$author$project$Midoto$onGoingTodos(todos)));
-						if (_v2.$ === 'Just') {
-							var i = _v2.a;
-							return $author$project$Midoto$Start(i);
-						} else {
-							return $author$project$Midoto$NoOp;
-						}
+						return A3(
+							$author$project$Midoto$parseCommandUseIndex,
+							$author$project$Midoto$Start,
+							_List_fromArray(
+								['1']),
+							$author$project$Midoto$onGoingTodos(todos));
 					case '/stop':
 						return $author$project$Midoto$Stop;
 					case '/0':
@@ -6563,8 +6554,8 @@ var $author$project$Midoto$parseMsg = F2(
 			} else {
 				var x = list.a;
 				var xs = list.b;
-				var _v3 = $elm$core$String$toLower(x);
-				switch (_v3) {
+				var _v2 = $elm$core$String$toLower(x);
+				switch (_v2) {
 					case '/add':
 						return $author$project$Midoto$AddTodo(xs);
 					case '/a':
@@ -6609,6 +6600,12 @@ var $author$project$Midoto$parseMsg = F2(
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
 							$author$project$Midoto$ActiveOn,
+							xs,
+							$author$project$Midoto$onGoingTodos(todos));
+					case '/start':
+						return A3(
+							$author$project$Midoto$parseCommandUseIndex,
+							$author$project$Midoto$Start,
 							xs,
 							$author$project$Midoto$onGoingTodos(todos));
 					default:
@@ -6724,7 +6721,15 @@ var $author$project$Midoto$commandElements = _List_fromArray(
 					[
 						$elm$html$Html$text('/start')
 					])),
-				$elm$html$Html$text(' to start or continue counting working time on a task')
+				$elm$html$Html$text(' to start or continue counting working time on a task. '),
+				A2(
+				$elm$html$Html$strong,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$elm$html$Html$text('/start')
+					])),
+				$elm$html$Html$text(' [task index] to select a working task and start it at the same time.')
 			])),
 		A2(
 		$elm$html$Html$span,
