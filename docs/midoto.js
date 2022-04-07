@@ -6099,9 +6099,9 @@ var $author$project$Midoto$startTodo = F2(
 			function (todo) {
 				return _Utils_eq(todo.id, index) ? _Utils_update(
 					todo,
-					{status: $author$project$Midoto$Active}) : _Utils_update(
+					{status: $author$project$Midoto$Active}) : (_Utils_eq(todo.status, $author$project$Midoto$Active) ? _Utils_update(
 					todo,
-					{status: $author$project$Midoto$Incomplete});
+					{status: $author$project$Midoto$Incomplete}) : todo);
 			},
 			todos);
 	});

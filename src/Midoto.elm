@@ -324,8 +324,10 @@ startTodo index todos =
     List.map (\todo ->
         if todo.id == index then
             { todo | status = Active }
-        else
+        else if todo.status == Active then
             { todo | status = Incomplete }
+        else
+            todo
     ) todos
 
 deleteTodo : Int -> List Todo -> List Todo
