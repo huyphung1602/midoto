@@ -605,15 +605,15 @@ parseCommandUseIndex command list todoTuples =
         x::_ ->
             parseMaybeInt (getTrueIndex (String.toInt x) todoTuples)
 
-parseEditTodo : List String -> Msg
-parseEditTodo list =
+parseEditTodo : List String -> List (Int, Todo) -> Msg
+parseEditTodo list todoTuples=
     case list of
         [] ->
             NoOp
         [_] ->
             NoOp
         x::xs ->
-            case String.toInt x of
+            case (getTrueIndex (String.toInt x) todoTuples) of
                 Just i ->
                     EditTodo i <| String.join " " xs
                 Nothing ->
@@ -643,9 +643,9 @@ parseMsg list todos =
                 "/a" ->
                     AddTodo <| String.join " " xs
                 "/edit" ->
-                    parseEditTodo xs
+                    parseEditTodo xs (onGoingTodos todos)
                 "/e" ->
-                    parseEditTodo xs
+                    parseEditTodo xs (onGoingTodos todos)
                 "/check" ->
                     parseCommandUseIndex Check xs (onGoingTodos todos)
                 "/c" ->

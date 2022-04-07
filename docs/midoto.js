@@ -6560,28 +6560,32 @@ var $author$project$Midoto$EditTodo = F2(
 	function (a, b) {
 		return {$: 'EditTodo', a: a, b: b};
 	});
-var $author$project$Midoto$parseEditTodo = function (list) {
-	if (!list.b) {
-		return $author$project$Midoto$NoOp;
-	} else {
-		if (!list.b.b) {
+var $author$project$Midoto$parseEditTodo = F2(
+	function (list, todoTuples) {
+		if (!list.b) {
 			return $author$project$Midoto$NoOp;
 		} else {
-			var x = list.a;
-			var xs = list.b;
-			var _v1 = $elm$core$String$toInt(x);
-			if (_v1.$ === 'Just') {
-				var i = _v1.a;
-				return A2(
-					$author$project$Midoto$EditTodo,
-					i,
-					A2($elm$core$String$join, ' ', xs));
-			} else {
+			if (!list.b.b) {
 				return $author$project$Midoto$NoOp;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				var _v1 = A2(
+					$author$project$Midoto$getTrueIndex,
+					$elm$core$String$toInt(x),
+					todoTuples);
+				if (_v1.$ === 'Just') {
+					var i = _v1.a;
+					return A2(
+						$author$project$Midoto$EditTodo,
+						i,
+						A2($elm$core$String$join, ' ', xs));
+				} else {
+					return $author$project$Midoto$NoOp;
+				}
 			}
 		}
-	}
-};
+	});
 var $elm$core$String$toLower = _String_toLower;
 var $author$project$Midoto$parseMsg = F2(
 	function (list, todos) {
@@ -6620,9 +6624,15 @@ var $author$project$Midoto$parseMsg = F2(
 						return $author$project$Midoto$AddTodo(
 							A2($elm$core$String$join, ' ', xs));
 					case '/edit':
-						return $author$project$Midoto$parseEditTodo(xs);
+						return A2(
+							$author$project$Midoto$parseEditTodo,
+							xs,
+							$author$project$Midoto$onGoingTodos(todos));
 					case '/e':
-						return $author$project$Midoto$parseEditTodo(xs);
+						return A2(
+							$author$project$Midoto$parseEditTodo,
+							xs,
+							$author$project$Midoto$onGoingTodos(todos));
 					case '/check':
 						return A3(
 							$author$project$Midoto$parseCommandUseIndex,
