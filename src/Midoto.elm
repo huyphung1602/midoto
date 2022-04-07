@@ -151,7 +151,8 @@ type Msg
     | PressCharacter Char
     | PressControl String
     | ChangeInput String
-    | AddTodo (List String)
+    | AddTodo String
+    | EditTodo Int String
     | Check Int
     | Uncheck Int
     | Delete Int
@@ -186,9 +187,19 @@ update msg model =
             ({ model | inputText = defaultInputText }
             , Cmd.none
             )         
-        AddTodo options ->
+        AddTodo todoName ->
             let
-                newTodos = addToTodos (String.join " " options) model.todos
+                newTodos = addTodos todoName model.todos
+            in
+            ({ model
+                | todos = newTodos
+                , inputText = defaultInputText
+            }
+            , saveTodos newTodos
+            )
+        EditTodo index newTodoName ->
+            let
+                newTodos = editTodos index newTodoName model.todos
             in
             ({ model
                 | todos = newTodos
@@ -283,8 +294,8 @@ lastElem list =
         _::rest ->
             lastElem rest
 
-addToTodos : String -> List Todo -> List Todo
-addToTodos input todos =
+addTodos : String -> List Todo -> List Todo
+addTodos input todos =
     let
         lastIndex =
             case lastElem todos of
@@ -294,6 +305,15 @@ addToTodos input todos =
                     1
     in
     todos ++ [ Todo lastIndex input 0 0 Incomplete]
+
+editTodos : Int -> String -> List Todo -> List Todo
+editTodos index newTodoName todos =
+    List.map (\todo ->
+        if todo.id == index then
+            { todo | name = newTodoName }
+        else
+            todo
+    ) todos
 
 setCompleteTodo : Int -> TodoStatus -> List Todo -> List Todo
 setCompleteTodo index completedStatus todos =
@@ -314,10 +334,6 @@ setActiveTodo index todos =
         else
             todo
     ) todos
-
-hasActiveTodo : List Todo -> Bool
-hasActiveTodo todos =
-    (List.filter (\todo -> todo.status == Active) todos |> List.length) > 0
 
 startTodo : Int -> List Todo -> List Todo
 startTodo index todos =
@@ -446,17 +462,21 @@ commandElements : List (Html Msg)
 commandElements =
     [ span []
         [ strong [] [ text "Press i" ]
-        , text " to show the command palette"
+        , text " to show the command palette."
         ]
     , span []
         [ strong [] [ text "/add or /a" ]
         , text " [your task name] or"
         , strong [] [ text " type your task name" ]
-        , text " to add a new task"
+        , text " to add a new task."
+        ]
+    , span []
+        [ strong [] [ text "/edit or /e" ]
+        , text " [task index] [new task name] to edit a task's name."
         ]
     , span []
         [ strong [] [ text "/wk" ]
-        , text " [task index] to select working task"
+        , text " [task index] to select working task."
         ]
     , span []
         [ strong [] [ text "/start" ]
@@ -466,27 +486,27 @@ commandElements =
         ]
     , span []
         [ strong [] [ text "/stop" ]
-        , text " to stop working time on a task"
+        , text " to stop working time on a task."
         ]
     , span []
         [ strong [] [ text "/check or /c" ]
-        , text " [task index] to complete a task"
+        , text " [task index] to complete a task."
         ]
     , span []
         [ strong [] [ text "/uncheck or /u" ]
-        , text " [task index] to complete a task"
+        , text " [task index] to complete a task."
         ]
     , span []
         [ strong [] [ text "/delete or /d" ]
-        , text " [task index] to delete a task"
+        , text " [task index] to delete a task."
         ]
     , span []
         [ strong [] [ text "/0" ]
-        , text " to show the list of commands"
+        , text " to show the list of commands."
         ]
     , span []
         [ strong [] [ text "/1" ]
-        , text " to show the completed tasks"
+        , text " to show the completed tasks."
         ]
     ]
 
@@ -522,6 +542,10 @@ viewTodo (uiIndex, todo) =
                 [ text <| parseWorkingTimeToString todo.workedTime ]
             ]
         ]
+
+activeTodos : List Todo -> List (Int, Todo)
+activeTodos todos =
+    List.filter (\todo -> todo.status == Active) todos |> List.indexedMap (\x y -> (x+1, y))
 
 onGoingTodos : List Todo -> List (Int, Todo)
 onGoingTodos todos =
@@ -581,6 +605,20 @@ parseCommandUseIndex command list todoTuples =
         x::_ ->
             parseMaybeInt (getTrueIndex (String.toInt x) todoTuples)
 
+parseEditTodo : List String -> Msg
+parseEditTodo list =
+    case list of
+        [] ->
+            NoOp
+        [_] ->
+            NoOp
+        x::xs ->
+            case String.toInt x of
+                Just i ->
+                    EditTodo i <| String.join " " xs
+                Nothing ->
+                    NoOp
+
 parseMsg : List String -> List Todo -> Msg
 parseMsg list todos =
     case list of
@@ -589,7 +627,7 @@ parseMsg list todos =
         [x] ->
             case String.toLower x of
                 "/start" ->
-                    parseCommandUseIndex Start ["1"] (onGoingTodos todos)
+                    parseCommandUseIndex Start ["1"] (activeTodos todos)
                 "/stop" ->
                     Stop
                 "/0" ->
@@ -601,9 +639,13 @@ parseMsg list todos =
         x::xs ->
             case String.toLower x of
                 "/add" ->
-                    AddTodo xs
+                    AddTodo <| String.join " " xs
                 "/a" ->
-                    AddTodo xs
+                    AddTodo <| String.join " " xs
+                "/edit" ->
+                    parseEditTodo xs
+                "/e" ->
+                    parseEditTodo xs
                 "/check" ->
                     parseCommandUseIndex Check xs (onGoingTodos todos)
                 "/c" ->
@@ -621,7 +663,8 @@ parseMsg list todos =
                 "/start" ->
                     parseCommandUseIndex Start xs (onGoingTodos todos)
                 _ ->
-                    AddTodo list
+                    AddTodo <| String.join " " list
+
 
 displayForm : Bool -> List (Html.Attribute msg)
 displayForm isShowForm =
