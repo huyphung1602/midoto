@@ -543,9 +543,22 @@ viewTodo (uiIndex, todo) =
             ]
         ]
 
+activeOrFirstOnGoingTodos : List Todo -> List (Int, Todo)
+activeOrFirstOnGoingTodos todos =
+    let
+        aTodos = activeTodos todos
+        onTodos = onGoingTodos todos
+    in
+    if (List.length aTodos) > 0 then
+        aTodos
+    else
+        onTodos
+
 activeTodos : List Todo -> List (Int, Todo)
 activeTodos todos =
     List.filter (\todo -> todo.status == Active) todos |> List.indexedMap (\x y -> (x+1, y))
+
+
 
 onGoingTodos : List Todo -> List (Int, Todo)
 onGoingTodos todos =
@@ -627,7 +640,7 @@ parseMsg list todos =
         [x] ->
             case String.toLower x of
                 "/start" ->
-                    parseCommandUseIndex Start ["1"] (activeTodos todos)
+                    parseCommandUseIndex Start ["1"] (activeOrFirstOnGoingTodos todos)
                 "/stop" ->
                     Stop
                 "/0" ->

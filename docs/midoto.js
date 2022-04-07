@@ -6473,6 +6473,11 @@ var $author$project$Midoto$activeTodos = function (todos) {
 			},
 			todos));
 };
+var $author$project$Midoto$activeOrFirstOnGoingTodos = function (todos) {
+	var onTodos = $author$project$Midoto$onGoingTodos(todos);
+	var aTodos = $author$project$Midoto$activeTodos(todos);
+	return ($elm$core$List$length(aTodos) > 0) ? aTodos : onTodos;
+};
 var $author$project$Midoto$completedTodos = function (todos) {
 	return A2(
 		$elm$core$List$indexedMap,
@@ -6602,7 +6607,7 @@ var $author$project$Midoto$parseMsg = F2(
 							$author$project$Midoto$Start,
 							_List_fromArray(
 								['1']),
-							$author$project$Midoto$activeTodos(todos));
+							$author$project$Midoto$activeOrFirstOnGoingTodos(todos));
 					case '/stop':
 						return $author$project$Midoto$Stop;
 					case '/0':
