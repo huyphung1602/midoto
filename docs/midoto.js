@@ -6693,9 +6693,7 @@ var $author$project$Midoto$styleApplicationBody = _List_fromArray(
 	[
 		A2($elm$html$Html$Attributes$style, 'display', 'flex'),
 		A2($elm$html$Html$Attributes$style, 'flex-direction', 'row'),
-		A2($elm$html$Html$Attributes$style, 'justify-content', 'space-evenly'),
 		A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-		A2($elm$html$Html$Attributes$style, 'padding-right', '50px'),
 		A2($elm$html$Html$Attributes$style, 'width', '100%'),
 		A2($elm$html$Html$Attributes$style, 'height', '100%'),
 		A2($elm$html$Html$Attributes$style, 'overflow', 'hidden')
@@ -6705,24 +6703,91 @@ var $author$project$Midoto$styleInputBox = _List_fromArray(
 		A2($elm$html$Html$Attributes$style, 'font-size', '16px'),
 		A2($elm$html$Html$Attributes$style, 'letter-spacing', '0.8px'),
 		A2($elm$html$Html$Attributes$style, 'height', '45px'),
-		A2($elm$html$Html$Attributes$style, 'width', '750px'),
+		A2($elm$html$Html$Attributes$style, 'width', '800px'),
 		A2($elm$html$Html$Attributes$style, 'padding', '0px 10px'),
 		A2($elm$html$Html$Attributes$style, 'border', '1px solid #666'),
 		A2($elm$html$Html$Attributes$style, 'border-radius', '4px'),
 		A2($elm$html$Html$Attributes$style, 'box-shadow', '0 0 50px rgba(0, 0, 0, 0.25)')
 	]);
-var $author$project$Midoto$styleOfListBox = _List_fromArray(
+var $author$project$Midoto$styleOfLeftPanel = _List_fromArray(
 	[
 		A2($elm$html$Html$Attributes$style, 'padding', '10px'),
+		A2($elm$html$Html$Attributes$style, 'margin-left', 'auto'),
 		A2($elm$html$Html$Attributes$style, 'border', '1px solid #d1d1d1'),
 		A2($elm$html$Html$Attributes$style, 'border-radius', '4px'),
 		A2($elm$html$Html$Attributes$style, 'width', '40%'),
-		A2($elm$html$Html$Attributes$style, 'height', '80%'),
+		A2($elm$html$Html$Attributes$style, 'height', '90%'),
 		A2($elm$html$Html$Attributes$style, 'font-size', '16px'),
 		A2($elm$html$Html$Attributes$style, 'overflow', 'hidden'),
 		A2($elm$html$Html$Attributes$style, 'box-shadow', '0 3px 10px rgb(0 0 0 / 0.2)')
 	]);
+var $author$project$Midoto$styleOfRightPanel = _List_fromArray(
+	[
+		A2($elm$html$Html$Attributes$style, 'padding', '10px'),
+		A2($elm$html$Html$Attributes$style, 'margin-left', 'auto'),
+		A2($elm$html$Html$Attributes$style, 'margin-right', 'auto'),
+		A2($elm$html$Html$Attributes$style, 'border', '1px solid #d1d1d1'),
+		A2($elm$html$Html$Attributes$style, 'border-radius', '4px'),
+		A2($elm$html$Html$Attributes$style, 'width', '40%'),
+		A2($elm$html$Html$Attributes$style, 'height', '90%'),
+		A2($elm$html$Html$Attributes$style, 'font-size', '16px'),
+		A2($elm$html$Html$Attributes$style, 'overflow', 'hidden'),
+		A2($elm$html$Html$Attributes$style, 'box-shadow', '0 3px 10px rgb(0 0 0 / 0.2)')
+	]);
+var $elm$svg$Svg$Attributes$dominantBaseline = _VirtualDom_attribute('dominant-baseline');
+var $elm$svg$Svg$Attributes$fill = _VirtualDom_attribute('fill');
+var $elm$svg$Svg$Attributes$fontFamily = _VirtualDom_attribute('font-family');
+var $elm$svg$Svg$Attributes$fontSize = _VirtualDom_attribute('font-size');
+var $elm$svg$Svg$Attributes$fontWeight = _VirtualDom_attribute('font-weight');
+var $elm$svg$Svg$Attributes$height = _VirtualDom_attribute('height');
+var $elm$svg$Svg$trustedNode = _VirtualDom_nodeNS('http://www.w3.org/2000/svg');
+var $elm$svg$Svg$rect = $elm$svg$Svg$trustedNode('rect');
+var $elm$svg$Svg$svg = $elm$svg$Svg$trustedNode('svg');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
+var $elm$svg$Svg$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$svg$Svg$text_ = $elm$svg$Svg$trustedNode('text');
+var $elm$svg$Svg$Attributes$viewBox = _VirtualDom_attribute('viewBox');
+var $elm$svg$Svg$Attributes$width = _VirtualDom_attribute('width');
+var $elm$svg$Svg$Attributes$x = _VirtualDom_attribute('x');
+var $elm$svg$Svg$Attributes$y = _VirtualDom_attribute('y');
+var $author$project$Midoto$svgLogo = A2(
+	$elm$svg$Svg$svg,
+	_List_fromArray(
+		[
+			$elm$svg$Svg$Attributes$viewBox('10 10 40 40'),
+			$elm$svg$Svg$Attributes$width('50'),
+			$elm$svg$Svg$Attributes$height('50'),
+			A2($elm$html$Html$Attributes$style, 'margin-top', '-10px')
+		]),
+	_List_fromArray(
+		[
+			A2(
+			$elm$svg$Svg$rect,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$x('10'),
+					$elm$svg$Svg$Attributes$y('10'),
+					$elm$svg$Svg$Attributes$width('40'),
+					$elm$svg$Svg$Attributes$height('40')
+				]),
+			_List_Nil),
+			A2(
+			$elm$svg$Svg$text_,
+			_List_fromArray(
+				[
+					$elm$svg$Svg$Attributes$x('50%'),
+					$elm$svg$Svg$Attributes$y('50%'),
+					$elm$svg$Svg$Attributes$dominantBaseline('hanging'),
+					$elm$svg$Svg$Attributes$fill('white'),
+					$elm$svg$Svg$Attributes$fontFamily('Courgette, cursive'),
+					$elm$svg$Svg$Attributes$fontWeight('600'),
+					$elm$svg$Svg$Attributes$fontSize('14px')
+				]),
+			_List_fromArray(
+				[
+					$elm$svg$Svg$text('Mi')
+				]))
+		]));
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$core$String$words = _String_words;
 var $author$project$Midoto$tokenize = function (input) {
@@ -7082,7 +7147,16 @@ var $author$project$Midoto$view = function (model) {
 					[
 						A2(
 						$elm$html$Html$div,
-						$author$project$Midoto$styleOfListBox,
+						_List_fromArray(
+							[
+								A2($elm$html$Html$Attributes$style, 'height', '90%'),
+								A2($elm$html$Html$Attributes$style, 'padding', '10px 0 10px 20px')
+							]),
+						_List_fromArray(
+							[$author$project$Midoto$svgLogo])),
+						A2(
+						$elm$html$Html$div,
+						$author$project$Midoto$styleOfLeftPanel,
 						A2(
 							$elm$core$List$cons,
 							A2(
@@ -7101,7 +7175,7 @@ var $author$project$Midoto$view = function (model) {
 								$author$project$Midoto$onGoingTodos(model.todos)))),
 						A2(
 						$elm$html$Html$div,
-						$author$project$Midoto$styleOfListBox,
+						$author$project$Midoto$styleOfRightPanel,
 						$author$project$Midoto$viewRightPanel(model))
 					]))
 			]));

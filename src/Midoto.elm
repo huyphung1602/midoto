@@ -8,7 +8,9 @@ import Browser.Events exposing (onKeyUp)
 import Browser.Dom as Dom
 import Html exposing (..)
 import Html.Events exposing (onInput, onSubmit)
-import Html.Attributes exposing (..)
+import Html.Attributes as HtmlAttr
+import Svg exposing (svg, rect, text_)
+import Svg.Attributes exposing (..)
 import Json.Decode as JsonDecode
 import Json.Encode as JsonEncode
 import Task
@@ -339,7 +341,7 @@ startTodo : Int -> List Todo -> List Todo
 startTodo index todos =
     List.map (\todo ->
         if todo.id == index then
-            { todo | status = Active }
+            { todo |status = Active }
         else if todo.status == Active then
             { todo | status = Incomplete }
         else
@@ -404,21 +406,21 @@ timerSub =
 -- START:view
 view : Model -> Html Msg
 view model =
-    div [ style "width" "100vw", style "height" "100vh", style "overflow" "hidden" ]
+    div [ HtmlAttr.style "width" "100vw", HtmlAttr.style "height" "100vh", HtmlAttr.style "overflow" "hidden" ]
         [
             Html.form 
                 ([ onSubmit (parseMsg (tokenize model.inputText) model.todos)
-                , style "justify-content" "center"
-                , style "align-items" "center"
-                , style "position" "absolute"
-                , style "height" "100vh"
-                , style "width" "100vw"
-                , style "background" "rgba(0, 0, 0, 0.5)"
+                , HtmlAttr.style "justify-content" "center"
+                , HtmlAttr.style "align-items" "center"
+                , HtmlAttr.style "position" "absolute"
+                , HtmlAttr.style "height" "100vh"
+                , HtmlAttr.style "width" "100vw"
+                , HtmlAttr.style "background" "rgba(0, 0, 0, 0.5)"
                 ] ++ displayForm model.isShowForm)
                 [ input
-                    ([ placeholder "What do you want to do?"
-                    , id "input-command-box"
-                    , value model.inputText
+                    ([ HtmlAttr.placeholder "What do you want to do?"
+                    , HtmlAttr.id "input-command-box"
+                    , HtmlAttr.value model.inputText
                     , onInput ChangeInput
                     ] ++ styleInputBox
                     )
@@ -426,10 +428,13 @@ view model =
                 ]
             , div
                 styleApplicationBody
-                [ div styleOfListBox <| (h3 [style "margin-left" "20px"] [ text "On Going Tasks" ])::(List.map viewTodo <| onGoingTodos model.todos)
-                , div styleOfListBox <| viewRightPanel model
+                [ div
+                    [ HtmlAttr.style "height" "90%"
+                    , HtmlAttr.style "padding" "10px 0 10px 20px"]
+                    [ svgLogo ]
+                , div styleOfLeftPanel <| (h3 [HtmlAttr.style "margin-left" "20px"] [ text "On Going Tasks" ])::(List.map viewTodo <| onGoingTodos model.todos)
+                , div styleOfRightPanel <| viewRightPanel model
                 ]
-
         ]
 
 viewRightPanel : Model -> List (Html Msg)
@@ -442,18 +447,18 @@ viewRightPanel model =
 
 viewCompletedTodos : List Todo -> List (Html Msg)
 viewCompletedTodos todos =
-    (h3 [style "margin-left" "20px"] [ text "Completed Tasks" ])::(List.map viewTodo <| completedTodos todos)
+    (h3 [HtmlAttr.style "margin-left" "20px"] [ text "Completed Tasks" ])::(List.map viewTodo <| completedTodos todos)
 
 viewCommandList : List (Html Msg) -> List (Html Msg)
 viewCommandList cmdElems =
-    (h3 [style "margin-left" "20px"] [ text "List of Commands" ])::(List.map viewCommand <| cmdElems)
+    (h3 [HtmlAttr.style "margin-left" "20px"] [ text "List of Commands" ])::(List.map viewCommand <| cmdElems)
 
 viewCommand : Html Msg -> Html Msg
 viewCommand cmdElement =
-    p [style "line-height" "32px"]
+    p [HtmlAttr.style "line-height" "32px"]
         [ div
-            [ style "margin-left" "16px"
-            , style "margin-right" "16px"
+            [ HtmlAttr.style "margin-left" "16px"
+            , HtmlAttr.style "margin-right" "16px"
             ]
             [ cmdElement ]
         ]
@@ -514,25 +519,25 @@ viewTodo : (Int, Todo) -> Html Msg
 viewTodo (uiIndex, todo) =
     p []
         [ div
-            [ style "text-decoration"
+            [ HtmlAttr.style "text-decoration"
                 (if todo.status == Completed then
                     "line-through"
                 else
                     "none"
                 )
-            , style "font-weight"
+            , HtmlAttr.style "font-weight"
                 (if todo.status == Active then
                     "600"
                 else
                     "300"
                 )
-            , style "display" "flex"
-            , style "justify-content" "space-between"
-            , style "margin-left" "16px"
-            , style "margin-right" "16px"
+            , HtmlAttr.style "display" "flex"
+            , HtmlAttr.style "justify-content" "space-between"
+            , HtmlAttr.style "margin-left" "16px"
+            , HtmlAttr.style "margin-right" "16px"
             ]
             [ span [] [ text <| (String.fromInt uiIndex) ++ ". " ++ todo.name ]
-            , span [ style "display"
+            , span [ HtmlAttr.style "display"
                     ( if todo.status == Active || todo.status == Completed then
                         "flex"
                     else
@@ -682,44 +687,87 @@ parseMsg list todos =
 displayForm : Bool -> List (Html.Attribute msg)
 displayForm isShowForm =
     if isShowForm then
-        [ style "display" "flex" ]
+        [ HtmlAttr.style "display" "flex" ]
     else
-        [ style "display" "none"]
+        [ HtmlAttr.style "display" "none"]
 
 styleApplicationBody : List (Html.Attribute msg)
 styleApplicationBody =
-    [ style "display" "flex"
-    , style "flex-direction" "row"
-    , style "justify-content" "space-evenly"
-    , style "align-items" "center"
-    , style "padding-right" "50px"
-    , style "width" "100%"
-    , style "height" "100%"
-    , style "overflow" "hidden"
+    [ HtmlAttr.style "display" "flex"
+    , HtmlAttr.style "flex-direction" "row"
+    , HtmlAttr.style "align-items" "center"
+    , HtmlAttr.style "width" "100%"
+    , HtmlAttr.style "height" "100%"
+    , HtmlAttr.style "overflow" "hidden"
     ]
 
-styleOfListBox : List (Html.Attribute msg)
-styleOfListBox =
-    [ style "padding" "10px"
-    , style "border" "1px solid #d1d1d1"
-    , style "border-radius" "4px"
-    , style "width" "40%"
-    , style "height" "80%"
-    , style "font-size" "16px"
-    , style "overflow" "hidden"
-    , style "box-shadow" "0 3px 10px rgb(0 0 0 / 0.2)"
+styleOfLeftPanel : List (Html.Attribute msg)
+styleOfLeftPanel =
+    [ HtmlAttr.style "padding" "10px"
+    , HtmlAttr.style "margin-left" "auto"
+    , HtmlAttr.style "border" "1px solid #d1d1d1"
+    , HtmlAttr.style "border-radius" "4px"
+    , HtmlAttr.style "width" "40%"
+    , HtmlAttr.style "height" "90%"
+    , HtmlAttr.style "font-size" "16px"
+    , HtmlAttr.style "overflow" "hidden"
+    , HtmlAttr.style "box-shadow" "0 3px 10px rgb(0 0 0 / 0.2)"
+    ]
+
+styleOfRightPanel : List (Html.Attribute msg)
+styleOfRightPanel =
+    [ HtmlAttr.style "padding" "10px"
+    , HtmlAttr.style "margin-left" "auto"
+    , HtmlAttr.style "margin-right" "auto"
+    , HtmlAttr.style "border" "1px solid #d1d1d1"
+    , HtmlAttr.style "border-radius" "4px"
+    , HtmlAttr.style "width" "40%"
+    , HtmlAttr.style "height" "90%"
+    , HtmlAttr.style "font-size" "16px"
+    , HtmlAttr.style "overflow" "hidden"
+    , HtmlAttr.style "box-shadow" "0 3px 10px rgb(0 0 0 / 0.2)"
     ]
 
 styleInputBox : List (Html.Attribute msg)
 styleInputBox =
-    [ style "font-size" "16px"
-    , style "letter-spacing" "0.8px"
-    , style "height" "45px"
-    , style "width" "800px"
-    , style "padding" "0px 10px"
-    , style "border" "1px solid #666"
-    , style "border-radius" "4px"
-    , style "box-shadow" "0 0 50px rgba(0, 0, 0, 0.25)"
+    [ HtmlAttr.style "font-size" "16px"
+    , HtmlAttr.style "letter-spacing" "0.8px"
+    , HtmlAttr.style "height" "45px"
+    , HtmlAttr.style "width" "800px"
+    , HtmlAttr.style "padding" "0px 10px"
+    , HtmlAttr.style "border" "1px solid #666"
+    , HtmlAttr.style "border-radius" "4px"
+    , HtmlAttr.style "box-shadow" "0 0 50px rgba(0, 0, 0, 0.25)"
     ]
-
 -- END:view
+
+-- START:logo
+svgLogo : Html msg
+svgLogo =
+    svg
+        [ viewBox "10 10 40 40"
+        , width "50"
+        , height "50"
+        , HtmlAttr.style "margin-top" "-10px"
+        ]
+        [ rect
+            [ x "10"
+            , y "10"
+            , width "40"
+            , height "40"
+            ]
+            []
+        , text_
+            [ x "50%"
+            , y "50%"
+            , dominantBaseline "hanging"
+            , fill "white"
+            , fontFamily "Courgette, cursive"
+            , fontWeight "600"
+            , fontSize "14px"
+            ]
+            [
+                Svg.text "Mi"
+            ]
+        ]
+-- END:logo
