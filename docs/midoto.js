@@ -5910,16 +5910,11 @@ var $elm$time$Time$every = F2(
 		return $elm$time$Time$subscription(
 			A2($elm$time$Time$Every, interval, tagger));
 	});
-var $author$project$Midoto$timerSub = function (model) {
-	return A2($elm$time$Time$every, 1000, $author$project$Midoto$Tick);
-};
+var $author$project$Midoto$timerSub = A2($elm$time$Time$every, 1000, $author$project$Midoto$Tick);
 var $author$project$Midoto$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$batch(
 		_List_fromArray(
-			[
-				$author$project$Midoto$onKeySub,
-				$author$project$Midoto$timerSub(model)
-			]));
+			[$author$project$Midoto$onKeySub, $author$project$Midoto$timerSub]));
 };
 var $author$project$Midoto$NoOp = {$: 'NoOp'};
 var $author$project$Midoto$lastElem = function (list) {

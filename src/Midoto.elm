@@ -390,14 +390,14 @@ toKey string =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ onKeySub, (timerSub model) ]
+    Sub.batch [ onKeySub, timerSub ]
 
 onKeySub : Sub Msg
 onKeySub =
     onKeyUp keyDecoder
 
-timerSub : Model -> Sub Msg
-timerSub model =
+timerSub : Sub Msg
+timerSub =
     Time.every 1000 Tick
 -- END:subscription
 
