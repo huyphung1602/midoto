@@ -715,7 +715,7 @@ styleInputBox =
     [ style "font-size" "16px"
     , style "letter-spacing" "0.8px"
     , style "height" "45px"
-    , style "width" "500px"
+    , style "width" "800px"
     , style "padding" "0px 10px"
     , style "border" "1px solid #666"
     , style "border-radius" "4px"

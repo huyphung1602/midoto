@@ -6705,7 +6705,7 @@ var $author$project$Midoto$styleInputBox = _List_fromArray(
 		A2($elm$html$Html$Attributes$style, 'font-size', '16px'),
 		A2($elm$html$Html$Attributes$style, 'letter-spacing', '0.8px'),
 		A2($elm$html$Html$Attributes$style, 'height', '45px'),
-		A2($elm$html$Html$Attributes$style, 'width', '500px'),
+		A2($elm$html$Html$Attributes$style, 'width', '750px'),
 		A2($elm$html$Html$Attributes$style, 'padding', '0px 10px'),
 		A2($elm$html$Html$Attributes$style, 'border', '1px solid #666'),
 		A2($elm$html$Html$Attributes$style, 'border-radius', '4px'),
